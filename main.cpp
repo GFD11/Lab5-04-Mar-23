@@ -16,55 +16,61 @@ const char* FILENAME = "/local/data.txt";
 
 float data[DATA_SIZE];
 int data_count = 0;
+float min_temp = 0.0f, max_temp = 0.0f, avg_temp = 0.0f;
+
+Thread min_thread, max_thread, avg_thread;
 
 
-void min_thread()
-{
-    float get_min(float *data, int size) {
-    float min = data[0];
-    for (int i = 1; i < size; i++) {
-      if (data[i] < min) {
-            min = data[i];
+void calculate_min(){
+    while(1){
+        if(data_count>0){
+            min_temp=data[0];
+               for (int i = 1; i < data_count; i++) {
+                    if (data[i] < min_temp) {
+                        min_temp = data[i];
+                    }
+               }    
+        }
     }
   }
-  return min;
-}
    
 
-void max_thread()
-{
-    float get_max(float *data, int size) {
-    float max = data[0];
-    for (int i = 1; i < size; i++) {
-     if (data[i] > max) {
-      max = data[i];
-    }
-        while (true) {
-        led2 = !led2;
-        ThisThread::sleep_for(1000);
+void calculate_max(){
+    while(1){
+        if(data_count>0){
+            max_temp=data[0];
+               for (int i = 1; i < data_count; i++) {
+                    if (data[i] < max_temp) {
+                        max_temp = data[i];
+                    }
+               }
         }
-    return max;
     }
- }    
+}
     
 
 
-void avg_thread()
-{
-    float get_average(float *data, int size) {
-    float sum = 0;
-    for (int i = 0; i < size; i++) {
-    sum += data[i];
-  }
-  return sum / size;
-}
-    while (true) {
-        led3 = !led3;
-        Thread::wait(250);
+void calculate_avg(){
+     while(1){
+        if(data_count>0){
+            avg_temp=data[0];
+               for (int i = 0; i < data_count; i++) {
+                    if (data[i] < max_temp) {
+                        avg_temp = data[i];
+                    }
+               }
+        }
     }
 }
+    
 
 int main(){
+
+    min_thread.start(calculate_min);
+    max_thread.start(calculate_max);
+    avg_thread.start(calculate_avg);
+   
+
     Timer log_timer;
     log_timer.start(); 
 
@@ -95,26 +101,20 @@ int main(){
                 i++;
             }
             fclose(fp);
-
-            float min = get_min(data, data_count);
-            float max = get_max(data, data_count);
-            float avg = get_average(data, data_count);
-            
-
+            data_count=i;
+               
             // show temp data on LCD
             lcd.cls();
             lcd.locate(0,3);
-            lcd.printf("Min temp: %.2fC\n", min);
-            lcd.printf("Max temp: %.2fC\n", max);
-            lcd.printf("Avg temp: %.2fC\n", avg);
+            lcd.printf("Min temp: %.2fC\n", min_temp);
+            lcd.printf("Max temp: %.2fC\n", max_temp);
+            lcd.printf("Avg temp: %.2fC\n", avg_temp);
         }
     
-    thread1.start(callback(min_thread));
-    thread2.start(callback(max_thread));
-    thread3.start(callback(avg_thread));
-
-    while (true) {
-        Thread::wait(1000);
+ 
+    //wait for 1 second
+    wait(1);
+    
     }
 
 }
