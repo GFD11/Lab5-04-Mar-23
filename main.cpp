@@ -111,10 +111,8 @@ int main(){
             lcd.printf("Avg temp: %.2fC\n", avg_temp);
         }
     
- 
-    //wait for 1 second
+     //wait for 1 second
     wait(1);
-    
     }
 
 }
