@@ -16,10 +16,12 @@ float data[DATA_SIZE];
 int data_count = 0;
 float min_temp = 0.0f, max_temp = 0.0f, avg_temp = 0.0f;
 
+//Thread setup
 Thread min_thread;
 Thread max_thread;
 Thread avg_thread;
 
+// Calculations for the Min Data
 void calculate_min() {
     while (1) {
         if (data_count > 0) {
@@ -34,6 +36,7 @@ void calculate_min() {
     }
 }
 
+// Calculations for the Max Data
 void calculate_max() {
     while (1) {
         if (data_count > 0) {
@@ -48,6 +51,7 @@ void calculate_max() {
     }
 }
 
+// Calculations for the Average Data
 void calculate_avg() {
     while (1) {
         if (data_count > 0) {
@@ -62,9 +66,9 @@ void calculate_avg() {
 }
 
 int main() {
-    min_thread.start((calculate_min));
-    max_thread.start((calculate_max));
-    avg_thread.start((calculate_avg));
+    min_thread.start(callback(calculate_min));
+    max_thread.start(callback(calculate_max));
+    avg_thread.start(callback(calculate_avg));
 
     Timer log_timer;
     log_timer.start();
